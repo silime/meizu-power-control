@@ -1,0 +1,5 @@
+/build/
+/dist/
+/*.tar.gz
+/meizu-power-control
+/meizu-power-control-helper

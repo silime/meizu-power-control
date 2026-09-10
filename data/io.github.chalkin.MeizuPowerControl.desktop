@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Meizu Power Control
+Name[zh_CN]=魅族电源控制
+Comment=Battery, wireless charging and USB-C status
+Comment[zh_CN]=查看电池、无线充电和 USB-C 状态
+Exec=meizu-power-control
+Icon=battery
+Terminal=false
+Type=Application
+Categories=Settings;HardwareSettings;
+StartupNotify=true
