@@ -1,19 +1,32 @@
 # Meizu Power Control
 
-GTK 4/libadwaita 电源状态工具，面向运行 mainline Linux 的 Meizu 20 Infinity。
-它通过标准 power_supply 和 Type-C sysfs 显示：
+English | [简体中文](README.zh-CN.md)
 
-- 无线反向充电开关、发射状态、电压和电流
-- 无线充电接收状态
-- 电池电量、充放电状态、功率和温度
-- USB 供电及 Type-C 角色、方向和 USB PD 状态
+A GTK 4/libadwaita power status utility for the Meizu 20 Infinity running
+mainline Linux. It reads the standard power_supply and Type-C sysfs interfaces to
+show:
 
-反向充电开关通过一个只允许写入 `0` 或 `1` 的小型 polkit helper 修改
-`/sys/class/power_supply/qcom-battmgr-wls-tx/online`，主界面无需以 root 运行。
+- Wireless reverse charging switch, transmitter state, voltage and current
+- Wireless charging receiver state
+- Battery capacity, charge/discharge state, power and temperature
+- USB power supply plus Type-C role, orientation and USB PD state
 
-## 构建
+The reverse charging switch is toggled through a small polkit helper that only
+allows writing `0` or `1` to
+`/sys/class/power_supply/qcom-battmgr-wls-tx/online`, so the main UI never needs
+to run as root.
 
-Arch Linux / Arch Linux ARM：
+## Screenshot
+
+<p align="center">
+  <img src="pic.png" alt="Reverse charging off" width="240">
+  <img src="pic1.png" alt="Transmitting" width="240">
+  <img src="pic2.png" alt="Waiting for a receiver" width="240">
+</p>
+
+## Build
+
+On Arch Linux / Arch Linux ARM:
 
 ```sh
 sudo pacman -S --needed base-devel meson ninja pkgconf gtk4 libadwaita
@@ -21,10 +34,11 @@ meson setup build --prefix=/usr
 meson compile -C build
 ```
 
-## 安装
+## Install
 
 ```sh
 sudo meson install -C build
 ```
 
-运行 `meizu-power-control`。第一次切换无线反向充电时，polkit 会请求认证。
+Then run `meizu-power-control`. polkit will ask for authentication the first time
+you toggle wireless reverse charging.
