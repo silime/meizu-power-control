@@ -1,0 +1,185 @@
+# Chinese (Simplified) translation for meizu-power-control.
+# This file is distributed under the same license as the
+# meizu-power-control package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: meizu-power-control 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-19 00:00+0800\n"
+"PO-Revision-Date: 2026-09-19 00:00+0800\n"
+"Last-Translator: \n"
+"Language-Team: Chinese (Simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: src/main.c
+msgid "Meizu Power Control"
+msgstr "魅族电源控制"
+
+#: src/main.c
+msgid "Wireless Reverse Charging"
+msgstr "无线反向充电"
+
+#: src/main.c
+msgid "Enable Reverse Charging"
+msgstr "开启反向充电"
+
+#: src/main.c
+msgid "Transmitter State"
+msgstr "发射状态"
+
+#: src/main.c
+msgid "Transmitter Voltage"
+msgstr "发射电压"
+
+#: src/main.c
+msgid "Transmitter Current"
+msgstr "发射电流"
+
+#: src/main.c
+msgid "Wireless Charging Receiver"
+msgstr "无线充电接收"
+
+#: src/main.c
+msgid "Connection Status"
+msgstr "连接状态"
+
+#: src/main.c
+msgid "Receiver Voltage"
+msgstr "接收电压"
+
+#: src/main.c
+msgid "Receiver Current"
+msgstr "接收电流"
+
+#: src/main.c
+msgid "Battery"
+msgstr "电池"
+
+#: src/main.c
+msgid "Charge State"
+msgstr "充放电状态"
+
+#: src/main.c
+msgid "Capacity"
+msgstr "电量"
+
+#: src/main.c
+msgid "Voltage"
+msgstr "电压"
+
+#: src/main.c
+msgid "Current"
+msgstr "电流"
+
+#: src/main.c
+msgid "Power"
+msgstr "功率"
+
+#: src/main.c
+msgid "Temperature"
+msgstr "温度"
+
+#: src/main.c
+msgid "USB Power"
+msgstr "USB 电源"
+
+#: src/main.c
+msgid "Charger Type"
+msgstr "充电类型"
+
+#: src/main.c
+msgid "Input Current Limit"
+msgstr "输入电流限制"
+
+#: src/main.c
+msgid "Orientation"
+msgstr "方向"
+
+#: src/main.c
+msgid "Power Role"
+msgstr "供电角色"
+
+#: src/main.c
+msgid "Data Role"
+msgstr "数据角色"
+
+#: src/main.c
+msgid "Power Operation Mode"
+msgstr "供电模式"
+
+#: src/main.c
+msgid "USB Role"
+msgstr "USB 角色"
+
+#: src/main.c
+msgid "USB PD"
+msgstr "USB PD"
+
+#: src/main.c
+msgid "Connected"
+msgstr "已连接"
+
+#: src/main.c
+msgid "Disconnected"
+msgstr "未连接"
+
+#: src/main.c
+msgid "Off"
+msgstr "已关闭"
+
+#: src/main.c
+msgid "Transmitting"
+msgstr "正在发射"
+
+#: src/main.c
+msgid "Waiting for a receiver"
+msgstr "等待接收设备"
+
+#: src/main.c
+msgid "On · status unknown"
+msgstr "已开启 · 状态未知"
+
+#: src/main.c
+msgid "Supported"
+msgstr "支持"
+
+#: src/main.c
+msgid "Not supported"
+msgstr "不支持"
+
+#: src/main.c
+msgid "Battery %s · Mainboard %s"
+msgstr "电池 %s · 主板 %s"
+
+#: src/main.c
+msgid "Operation failed"
+msgstr "操作失败"
+
+#: src/main.c
+msgid "Unknown"
+msgstr "未知"
+
+#: src/main.c
+msgid "Charging"
+msgstr "充电中"
+
+#: src/main.c
+msgid "Discharging"
+msgstr "放电中"
+
+#: src/main.c
+msgid "Not charging"
+msgstr "未充电"
+
+#: src/main.c
+msgid "Full"
+msgstr "已充满"
+
+#: src/main.c
+msgid "Pending"
+msgstr "待处理"

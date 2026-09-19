@@ -13,6 +13,8 @@ GTK 4/libadwaita 电源状态工具，面向运行 mainline Linux 的 Meizu 20 I
 反向充电开关通过一个只允许写入 `0` 或 `1` 的小型 polkit helper 修改
 `/sys/class/power_supply/qcom-battmgr-wls-tx/online`，主界面无需以 root 运行。
 
+界面语言跟随系统设置，目前提供英文和简体中文。
+
 ## 截图
 
 <p align="center">

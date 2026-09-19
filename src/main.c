@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-only
 #include <adwaita.h>
 #include <errno.h>
+#include <glib/gi18n.h>
+#include <locale.h>
 
 #define APP_ID "io.github.chalkin.MeizuPowerControl"
 #define HELPER_PATH "/usr/libexec/meizu-power-control-helper"
@@ -12,6 +14,17 @@
 #define TYPEC_PATH "/sys/class/typec/port0/"
 #define PARTNER_PATH "/sys/class/typec/port0-partner/"
 #define USB_ROLE_PATH "/sys/class/usb_role/a600000.usb-role-switch/role"
+
+/* Kernel power_supply status values we know how to translate. */
+static const char *const power_supply_statuses[] = {
+	N_("Unknown"),
+	N_("Charging"),
+	N_("Discharging"),
+	N_("Not charging"),
+	N_("Full"),
+	N_("Pending"),
+	NULL,
+};
 
 typedef struct {
 	AdwApplication *application;
@@ -97,30 +110,38 @@ static char *format_online(const char *base)
 	char *formatted;
 
 	if (!strcmp(raw, "1"))
-		formatted = g_strdup("已连接");
+		formatted = g_strdup(_("Connected"));
 	else if (!strcmp(raw, "0"))
-		formatted = g_strdup("未连接");
+		formatted = g_strdup(_("Disconnected"));
 	else
 		formatted = g_strdup("—");
 	g_free(raw);
 	return formatted;
 }
 
+static char *format_status(const char *status)
+{
+	if (g_strv_contains(power_supply_statuses, status))
+		return g_strdup(_(status));
+
+	return g_strdup(status);
+}
+
 static char *format_tx_status(const char *online, const char *status)
 {
 	if (!strcmp(online, "0"))
-		return g_strdup("已关闭");
+		return g_strdup(_("Off"));
 	if (strcmp(online, "1"))
 		return g_strdup("—");
 
 	if (!strcmp(status, "Discharging"))
-		return g_strdup("正在发射");
+		return g_strdup(_("Transmitting"));
 	if (!strcmp(status, "Not charging"))
-		return g_strdup("等待接收设备");
+		return g_strdup(_("Waiting for a receiver"));
 	if (!strcmp(status, "Unknown"))
-		return g_strdup("已开启 · 状态未知");
+		return g_strdup(_("On · status unknown"));
 
-	return g_strdup(status);
+	return format_status(status);
 }
 
 static gboolean refresh_status(gpointer user_data)
@@ -154,7 +175,8 @@ static gboolean refresh_status(gpointer user_data)
 	set_row(state->rx_current,
 		format_property(WLS_PATH, "current_now", 1000000.0, "A"));
 
-	set_row(state->battery_status, read_property(BAT_PATH, "status"));
+	set_row(state->battery_status,
+		format_status(read_property(BAT_PATH, "status")));
 	capacity_text = strcmp(capacity, "—") ? g_strdup_printf("%s %%", capacity)
 						 : g_strdup("—");
 	set_row(state->battery_capacity, capacity_text);
@@ -167,7 +189,8 @@ static gboolean refresh_status(gpointer user_data)
 		format_property(BAT_PATH, "power_now", 1000000.0, "W"));
 	temperature = format_property(BAT_PATH, "temp", 10.0, "°C");
 	ambient = format_property(BAT_PATH, "temp_ambient", 10.0, "°C");
-	temperature_text = g_strdup_printf("电池 %s · 主板 %s", temperature, ambient);
+	temperature_text = g_strdup_printf(_("Battery %s · Mainboard %s"),
+					   temperature, ambient);
 	set_row(state->battery_temperature, temperature_text);
 	g_free(temperature);
 	g_free(ambient);
@@ -190,10 +213,10 @@ static gboolean refresh_status(gpointer user_data)
 	pd = read_property(PARTNER_PATH, "supports_usb_power_delivery");
 	if (!strcmp(pd, "yes") || !strcmp(pd, "1")) {
 		g_free(pd);
-		pd = g_strdup("支持");
+		pd = g_strdup(_("Supported"));
 	} else if (!strcmp(pd, "no") || !strcmp(pd, "0")) {
 		g_free(pd);
-		pd = g_strdup("不支持");
+		pd = g_strdup(_("Not supported"));
 	}
 	set_row(state->typec_pd, pd);
 
@@ -207,7 +230,8 @@ static void control_finished(GObject *source, GAsyncResult *result,
 	GError *error = NULL;
 
 	if (!g_subprocess_wait_check_finish(G_SUBPROCESS(source), result, &error)) {
-		AdwToast *toast = adw_toast_new(error ? error->message : "操作失败");
+		AdwToast *toast = adw_toast_new(error ? error->message
+						      : _("Operation failed"));
 
 		adw_toast_overlay_add_toast(state->toast_overlay, toast);
 		g_clear_error(&error);
@@ -283,7 +307,7 @@ static void activate(GtkApplication *application, gpointer user_data)
 	}
 
 	state->window = ADW_APPLICATION_WINDOW(adw_application_window_new(application));
-	gtk_window_set_title(GTK_WINDOW(state->window), "魅族电源控制");
+	gtk_window_set_title(GTK_WINDOW(state->window), _("Meizu Power Control"));
 	gtk_window_set_default_size(GTK_WINDOW(state->window), 480, 760);
 
 	state->toast_overlay = ADW_TOAST_OVERLAY(adw_toast_overlay_new());
@@ -307,44 +331,44 @@ static void activate(GtkApplication *application, gpointer user_data)
 	gtk_widget_set_margin_end(GTK_WIDGET(box), 12);
 	adw_clamp_set_child(clamp, GTK_WIDGET(box));
 
-	group = add_group(box, "无线反向充电");
+	group = add_group(box, _("Wireless Reverse Charging"));
 	state->tx_switch = ADW_SWITCH_ROW(adw_switch_row_new());
 	adw_preferences_row_set_title(ADW_PREFERENCES_ROW(state->tx_switch),
-				      "开启反向充电");
+				      _("Enable Reverse Charging"));
 	adw_preferences_group_add(group, GTK_WIDGET(state->tx_switch));
 	g_signal_connect(state->tx_switch, "notify::active",
 			 G_CALLBACK(tx_switch_changed), state);
-	state->tx_status = add_row(group, "发射状态");
-	state->tx_voltage = add_row(group, "发射电压");
-	state->tx_current = add_row(group, "发射电流");
+	state->tx_status = add_row(group, _("Transmitter State"));
+	state->tx_voltage = add_row(group, _("Transmitter Voltage"));
+	state->tx_current = add_row(group, _("Transmitter Current"));
 
-	group = add_group(box, "无线充电接收");
-	state->rx_online = add_row(group, "连接状态");
-	state->rx_voltage = add_row(group, "接收电压");
-	state->rx_current = add_row(group, "接收电流");
+	group = add_group(box, _("Wireless Charging Receiver"));
+	state->rx_online = add_row(group, _("Connection Status"));
+	state->rx_voltage = add_row(group, _("Receiver Voltage"));
+	state->rx_current = add_row(group, _("Receiver Current"));
 
-	group = add_group(box, "电池");
-	state->battery_status = add_row(group, "充放电状态");
-	state->battery_capacity = add_row(group, "电量");
-	state->battery_voltage = add_row(group, "电压");
-	state->battery_current = add_row(group, "电流");
-	state->battery_power = add_row(group, "功率");
-	state->battery_temperature = add_row(group, "温度");
+	group = add_group(box, _("Battery"));
+	state->battery_status = add_row(group, _("Charge State"));
+	state->battery_capacity = add_row(group, _("Capacity"));
+	state->battery_voltage = add_row(group, _("Voltage"));
+	state->battery_current = add_row(group, _("Current"));
+	state->battery_power = add_row(group, _("Power"));
+	state->battery_temperature = add_row(group, _("Temperature"));
 
-	group = add_group(box, "USB 电源");
-	state->usb_online = add_row(group, "连接状态");
-	state->usb_type = add_row(group, "充电类型");
-	state->usb_voltage = add_row(group, "电压");
-	state->usb_current = add_row(group, "电流");
-	state->usb_limit = add_row(group, "输入电流限制");
+	group = add_group(box, _("USB Power"));
+	state->usb_online = add_row(group, _("Connection Status"));
+	state->usb_type = add_row(group, _("Charger Type"));
+	state->usb_voltage = add_row(group, _("Voltage"));
+	state->usb_current = add_row(group, _("Current"));
+	state->usb_limit = add_row(group, _("Input Current Limit"));
 
 	group = add_group(box, "USB Type-C");
-	state->typec_orientation = add_row(group, "方向");
-	state->typec_power_role = add_row(group, "供电角色");
-	state->typec_data_role = add_row(group, "数据角色");
-	state->typec_mode = add_row(group, "供电模式");
-	state->typec_usb_role = add_row(group, "USB 角色");
-	state->typec_pd = add_row(group, "USB PD");
+	state->typec_orientation = add_row(group, _("Orientation"));
+	state->typec_power_role = add_row(group, _("Power Role"));
+	state->typec_data_role = add_row(group, _("Data Role"));
+	state->typec_mode = add_row(group, _("Power Operation Mode"));
+	state->typec_usb_role = add_row(group, _("USB Role"));
+	state->typec_pd = add_row(group, _("USB PD"));
 
 	refresh_status(state);
 	g_timeout_add_seconds(2, refresh_status, state);
@@ -355,6 +379,11 @@ int main(int argc, char **argv)
 {
 	AppState state = { 0 };
 	int status;
+
+	setlocale(LC_ALL, "");
+	bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
+	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+	textdomain(GETTEXT_PACKAGE);
 
 	state.application = adw_application_new(APP_ID, G_APPLICATION_DEFAULT_FLAGS);
 	g_signal_connect(state.application, "activate", G_CALLBACK(activate), &state);

@@ -16,6 +16,9 @@ allows writing `0` or `1` to
 `/sys/class/power_supply/qcom-battmgr-wls-tx/online`, so the main UI never needs
 to run as root.
 
+The interface follows the system language. English and Simplified Chinese are
+currently available.
+
 ## Screenshot
 
 <p align="center">
