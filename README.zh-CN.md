@@ -40,3 +40,11 @@ sudo meson install -C build
 ```
 
 运行 `meizu-power-control`。第一次切换无线反向充电时，polkit 会请求认证。
+
+## 打包
+
+```sh
+git clone https://github.com/silime/meizu-power-control.git
+cd meizu-power-control/packaging
+makepkg -si
+```

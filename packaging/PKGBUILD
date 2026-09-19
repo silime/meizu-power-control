@@ -1,0 +1,34 @@
+# Maintainer: silime <silime@users.noreply.github.com>
+#
+# This PKGBUILD packages the source tree it lives in (the parent directory), so
+# it never downloads a copy of the project:
+#
+#   cd packaging
+#   makepkg -si
+
+pkgname=meizu-power-control
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Power status and wireless reverse charging control for the Meizu 20 Infinity"
+arch=('aarch64')
+url="https://github.com/silime/meizu-power-control"
+license=('GPL-2.0-only')
+depends=('gtk4' 'libadwaita' 'polkit')
+makedepends=('meson' 'ninja')
+source=()
+sha256sums=()
+
+build() {
+  meson setup "$srcdir/build" "$startdir/.." \
+    --prefix=/usr \
+    --buildtype=release
+  meson compile -C "$srcdir/build"
+}
+
+check() {
+  meson test -C "$srcdir/build" --print-errorlogs
+}
+
+package() {
+  meson install -C "$srcdir/build" --destdir "$pkgdir" --no-rebuild
+}

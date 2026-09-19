@@ -45,3 +45,11 @@ sudo meson install -C build
 
 Then run `meizu-power-control`. polkit will ask for authentication the first time
 you toggle wireless reverse charging.
+
+## Package
+
+```sh
+git clone https://github.com/silime/meizu-power-control.git
+cd meizu-power-control/packaging
+makepkg -si
+```

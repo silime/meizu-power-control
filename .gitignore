@@ -3,3 +3,6 @@
 /*.tar.gz
 /meizu-power-control
 /meizu-power-control-helper
+/packaging/src/
+/packaging/pkg/
+/packaging/*.pkg.tar.*
